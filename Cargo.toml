@@ -1,0 +1,22 @@
+[package]
+name = "heino_cleaner"
+version = "0.1.0"
+edition = "2021"
+description = "Windows system cleaner for temp files and caches"
+
+[dependencies]
+eframe = "0.29"
+rfd = "0.15"
+winreg = "0.52"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+windows-sys = { version = "0.59", features = [
+    "Win32_UI_Shell",
+    "Win32_System_Console",
+] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

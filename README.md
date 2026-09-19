@@ -12,8 +12,11 @@ A Windows system cleaner for removing temporary files, cache, and other junk to 
 
 ## Installation
 
+Build (requires [Rust](https://rustup.rs)):
+
 ```powershell
-python heino_cleaner.py --install
+cargo build --release
+.\target\release\heino_cleaner.exe --install
 ```
 
 After installation, run with:
@@ -30,13 +33,13 @@ heino-cleaner
 ## System Requirements
 
 - Windows 10 or later
-- Python 3.0+
+- Rust (only to build from source)
 - For full functionality, run as Administrator (optional)
 
 ## Uninstallation
 
 ```powershell
-python heino_cleaner.py --uninstall
+heino-cleaner --uninstall
 ```
 
 ## What Gets Cleaned
