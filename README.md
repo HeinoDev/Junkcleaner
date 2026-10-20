@@ -1,15 +1,14 @@
 # Junkcleaner
 
-A Windows cleaner for temp files, caches and other junk. Pick the version you prefer:
+A Windows cleaner for temp files, caches and other junk. Pick the version you prefer (Python or Rust):
 
 | Folder | Needs | Run |
 |---|---|---|
 | `python/` | Python 3 | `python python/junkcleaner.py` |
 | `rust/` | [Rust](https://rustup.rs) | `cd rust && cargo run --release` |
 | `python/` (command line) | Python 3 | `python python/junkcleaner.py --cli` (add `--clean` to delete, `--discord` to include Discord) |
-| `powershell/` | Nothing (built into Windows) | `.\powershell\junkcleaner.ps1` (add `-Clean` to delete) |
 
-The Python and Rust versions have a GUI and can install themselves with `--install` (remove with `--uninstall`). The PowerShell version is a simple command-line scan/clean.
+Both versions have a GUI and can install themselves with `--install` (remove with `--uninstall`). The Python version also has a command-line mode (`--cli`).
 
 ## What gets cleaned
 
