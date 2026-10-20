@@ -1,5 +1,5 @@
 [package]
-name = "heino_cleaner"
+name = "junkcleaner"
 version = "0.1.0"
 edition = "2021"
 description = "Windows system cleaner for temp files and caches"

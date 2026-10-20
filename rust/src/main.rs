@@ -14,7 +14,7 @@ use rfd::{MessageButtons, MessageDialog, MessageDialogResult, MessageLevel};
 use winreg::enums::{HKEY_CURRENT_USER, KEY_READ, KEY_WRITE};
 use winreg::RegKey;
 
-const APP_NAME: &str = "Heino Cleaner";
+const APP_NAME: &str = "Junkcleaner";
 const REPARSE_POINT: u32 = 0x400;
 
 fn env_path(name: &str) -> PathBuf {
@@ -28,7 +28,7 @@ fn windir() -> PathBuf {
 }
 
 fn install_dir() -> PathBuf {
-    env_path("LOCALAPPDATA").join("HeinoCleaner")
+    env_path("LOCALAPPDATA").join("Junkcleaner")
 }
 
 fn is_admin() -> bool {
@@ -399,7 +399,7 @@ impl App {
     }
 
     fn save_log(&self) {
-        let name = format!("heino-cleaner-{}.txt", chrono::Local::now().format("%Y-%m-%d"));
+        let name = format!("junkcleaner-{}.txt", chrono::Local::now().format("%Y-%m-%d"));
         let Some(path) = rfd::FileDialog::new()
             .set_file_name(name)
             .add_filter("Tekstfil", &["txt"])
@@ -584,7 +584,7 @@ fn install() -> std::io::Result<()> {
     let dir = install_dir();
     fs::create_dir_all(&dir)?;
     let src = env::current_exe()?;
-    let dst = dir.join("heino-cleaner.exe");
+    let dst = dir.join("junkcleaner.exe");
     if norm(&src) != norm(&dst) {
         fs::copy(&src, &dst)?;
     }
@@ -599,7 +599,7 @@ fn install() -> std::io::Result<()> {
         }
     }
 
-    let lnk = startmenu_dir().join("Heino Cleaner.lnk");
+    let lnk = startmenu_dir().join("Junkcleaner.lnk");
     let exe = dst.to_string_lossy();
     let ps = format!(
         "$s = (New-Object -ComObject WScript.Shell).CreateShortcut('{}');\
@@ -612,9 +612,9 @@ fn install() -> std::io::Result<()> {
     );
     let _ = Command::new("powershell").args(["-NoProfile", "-Command", &ps]).output();
 
-    println!("Heino Cleaner er installeret i:");
+    println!("Junkcleaner er installeret i:");
     println!("  {}", dir.display());
-    println!("Åbn en ny terminal og skriv:  heino-cleaner");
+    println!("Åbn en ny terminal og skriv:  junkcleaner");
     Ok(())
 }
 
@@ -622,8 +622,8 @@ fn uninstall() {
     // The running exe may live in the install dir; Windows won't let us delete it,
     // so removal of that one file is best-effort.
     let _ = fs::remove_dir_all(install_dir());
-    let _ = fs::remove_file(startmenu_dir().join("Heino Cleaner.lnk"));
-    println!("Heino Cleaner er fjernet. PATH-linjen kan ryddes manuelt i System-indstillinger.");
+    let _ = fs::remove_file(startmenu_dir().join("Junkcleaner.lnk"));
+    println!("Junkcleaner er fjernet. PATH-linjen kan ryddes manuelt i System-indstillinger.");
 }
 
 fn main() -> eframe::Result {

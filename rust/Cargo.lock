@@ -1472,7 +1472,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "heino_cleaner"
+name = "junkcleaner"
 version = "0.1.0"
 dependencies = [
  "chrono",

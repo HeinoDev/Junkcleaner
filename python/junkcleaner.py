@@ -13,7 +13,7 @@ try:
 except ImportError:
     winreg = None
 
-app_name = "Heino Cleaner"
+app_name = "Junkcleaner"
 
 local = os.environ.get("LOCALAPPDATA", "")
 roaming = os.environ.get("APPDATA", "")
@@ -24,7 +24,7 @@ safe_roots = [os.path.normcase(os.path.abspath(p))
               for p in (local, roaming, temp, os.path.join(windir, "Temp"))
               if p]
 
-install_dir = os.path.join(local, "HeinoCleaner")
+install_dir = os.path.join(local, "Junkcleaner")
 
 
 def is_admin():
@@ -222,7 +222,7 @@ class App(tk.Tk):
 
         title = ttk.Frame(header, style="Bg.TFrame")
         title.pack(side="left", fill="x", expand=True)
-        ttk.Label(title, text="Heino Cleaner", style="H1.TLabel").pack(anchor="w")
+        ttk.Label(title, text="Junkcleaner", style="H1.TLabel").pack(anchor="w")
         ttk.Label(title, text="Scan maskinen, se hvad der kan ryddes, og ryd det.",
                   style="Sub.TLabel").pack(anchor="w", pady=(0, 6))
 
@@ -387,7 +387,7 @@ class App(tk.Tk):
     def save_log(self):
         path = filedialog.asksaveasfilename(
             defaultextension=".txt",
-            initialfile=f"heino-cleaner-{datetime.now():%Y-%m-%d}.txt",
+            initialfile=f"junkcleaner-{datetime.now():%Y-%m-%d}.txt",
             filetypes=[("Tekstfil", "*.txt")],
         )
         if not path:
@@ -512,11 +512,11 @@ def _startmenu_dir():
 def install():
     src = os.path.abspath(__file__)
     os.makedirs(install_dir, exist_ok=True)
-    dst = os.path.join(install_dir, "heino_cleaner.py")
+    dst = os.path.join(install_dir, "junkcleaner.py")
     if os.path.normcase(src) != os.path.normcase(dst):
         shutil.copy2(src, dst)
 
-    shim = os.path.join(install_dir, "heino-cleaner.cmd")
+    shim = os.path.join(install_dir, "junkcleaner.cmd")
     with open(shim, "w", encoding="utf-8") as fh:
         fh.write(f'@echo off\r\n"{sys.executable}" "{dst}" %*\r\n')
 
@@ -529,7 +529,7 @@ def install():
             pass
 
     try:
-        lnk = os.path.join(_startmenu_dir(), "Heino Cleaner.lnk")
+        lnk = os.path.join(_startmenu_dir(), "Junkcleaner.lnk")
         ps = (
             f"$s = (New-Object -ComObject WScript.Shell).CreateShortcut('{lnk}');"
             f"$s.TargetPath = '{sys.executable}';"
@@ -543,18 +543,18 @@ def install():
     except OSError:
         pass
 
-    print("Heino Cleaner er installeret i:")
+    print("Junkcleaner er installeret i:")
     print("  " + install_dir)
-    print('Åbn en ny terminal og skriv:  heino-cleaner')
+    print('Åbn en ny terminal og skriv:  junkcleaner')
 
 
 def uninstall():
     shutil.rmtree(install_dir, ignore_errors=True)
     try:
-        os.remove(os.path.join(_startmenu_dir(), "Heino Cleaner.lnk"))
+        os.remove(os.path.join(_startmenu_dir(), "Junkcleaner.lnk"))
     except OSError:
         pass
-    print("Heino Cleaner er fjernet. PATH-linjen kan ryddes manuelt i System-indstillinger.")
+    print("Junkcleaner er fjernet. PATH-linjen kan ryddes manuelt i System-indstillinger.")
 
 
 if __name__ == "__main__":
