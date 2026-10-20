@@ -133,6 +133,49 @@ font_ui = "Segoe UI"
 font_medium = "Segoe UI Semibold"
 
 
+def default_items():
+    return {
+        "Midlertidige brugerfiler": {
+            "enabled": True,
+            "paths": [temp],
+            "desc": "%TEMP% - din temp-mappe",
+            "admin": False,
+        },
+        "Midlertidige Windows-filer": {
+            "enabled": True,
+            "paths": [os.path.join(windir, "Temp")],
+            "desc": "kræver du kører som administrator",
+            "admin": True,
+        },
+        "DirectX shader-cache": {
+            "enabled": True,
+            "paths": [os.path.join(local, "D3DSCache")],
+            "desc": "bygges op igen af sig selv",
+            "admin": False,
+        },
+        "FiveM-cache": {
+            "enabled": True,
+            "paths": [
+                os.path.join(local, r"FiveM\FiveM.app\data\cache"),
+                os.path.join(local, r"FiveM\FiveM.app\data\server-cache"),
+                os.path.join(local, r"FiveM\FiveM.app\data\server-cache-priv"),
+            ],
+            "desc": "rører kun din cache",
+            "admin": False,
+        },
+        "Discord-cache": {
+            "enabled": False,
+            "paths": [
+                os.path.join(roaming, r"discord\Cache"),
+                os.path.join(roaming, r"discord\Code Cache"),
+                os.path.join(roaming, r"discord\GPUCache"),
+            ],
+            "desc": "luk Discord først for bedste resultat",
+            "admin": False,
+        },
+    }
+
+
 def dark_titlebar(win):
     try:
         win.update_idletasks()
@@ -332,46 +375,9 @@ class App(tk.Tk):
         self.sizes = {}
         self.progress = 0.0
 
-        self.items = {
-            "Midlertidige brugerfiler": {
-                "enabled": tk.BooleanVar(value=True),
-                "paths": [temp],
-                "desc": "%TEMP% - din temp-mappe",
-                "admin": False,
-            },
-            "Midlertidige Windows-filer": {
-                "enabled": tk.BooleanVar(value=True),
-                "paths": [os.path.join(windir, "Temp")],
-                "desc": "kræver du kører som administrator",
-                "admin": True,
-            },
-            "DirectX shader-cache": {
-                "enabled": tk.BooleanVar(value=True),
-                "paths": [os.path.join(local, "D3DSCache")],
-                "desc": "bygges op igen af sig selv",
-                "admin": False,
-            },
-            "FiveM-cache": {
-                "enabled": tk.BooleanVar(value=True),
-                "paths": [
-                    os.path.join(local, r"FiveM\FiveM.app\data\cache"),
-                    os.path.join(local, r"FiveM\FiveM.app\data\server-cache"),
-                    os.path.join(local, r"FiveM\FiveM.app\data\server-cache-priv"),
-                ],
-                "desc": "rører kun din cache",
-                "admin": False,
-            },
-            "Discord-cache": {
-                "enabled": tk.BooleanVar(value=False),
-                "paths": [
-                    os.path.join(roaming, r"discord\Cache"),
-                    os.path.join(roaming, r"discord\Code Cache"),
-                    os.path.join(roaming, r"discord\GPUCache"),
-                ],
-                "desc": "luk Discord først for bedste resultat",
-                "admin": False,
-            },
-        }
+        self.items = default_items()
+        for data in self.items.values():
+            data["enabled"] = tk.BooleanVar(value=data["enabled"])
 
         self.build()
         dark_titlebar(self)
@@ -575,6 +581,45 @@ class App(tk.Tk):
         self.scan()
 
 
+def cli(args):
+    admin = is_admin()
+    items = default_items()
+    if "--discord" in args:
+        items["Discord-cache"]["enabled"] = True
+    chosen = {n: d for n, d in items.items() if d["enabled"] and (admin or not d["admin"])}
+    if not admin:
+        print("Kører uden administrator - Windows Temp springes over.")
+
+    sizes = {}
+    for name, data in chosen.items():
+        sizes[name] = sum(folder_size(p) for p in data["paths"])
+        print(f"{name:<30}{fmt(sizes[name]):>12}")
+    print(f"{'I alt':<30}{fmt(sum(sizes.values())):>12}")
+
+    if "--clean" not in args:
+        print("Kun scanning. Kør med --clean for at rydde (--discord tager Discord-cache med).")
+        return
+    if input("Ryd de valgte ting? [j/N] ").strip().lower() not in ("j", "y"):
+        return
+
+    total = 0
+    locked_total = 0
+    for name, data in chosen.items():
+        deleted = 0
+        locked = 0
+        for path in data["paths"]:
+            d, l = clean_folder(path, log=print)
+            deleted += d
+            locked += l
+        total += deleted
+        locked_total += locked
+        line = f"[OK] {name}: {fmt(deleted)} fjernet"
+        if locked:
+            line += f"  ({fmt(locked)} sprunget over - i brug)"
+        print(line)
+    print(f"Færdig. I alt fjernet: {fmt(total)}")
+
+
 def _startmenu_dir():
     base = roaming or os.path.expanduser("~")
     return os.path.join(base, r"Microsoft\Windows\Start Menu\Programs")
@@ -629,7 +674,9 @@ def uninstall():
 
 
 if __name__ == "__main__":
-    if "--install" in sys.argv:
+    if "--cli" in sys.argv:
+        cli(sys.argv)
+    elif "--install" in sys.argv:
         install()
     elif "--uninstall" in sys.argv:
         uninstall()
